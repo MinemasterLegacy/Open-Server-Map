@@ -1,18 +1,21 @@
 package net.mmly.openservermap;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.InputStream;
+
 public final class OpenServerMap extends JavaPlugin implements Listener {
 
     private static int interval = 0;
+    private static OpenServerMap instance;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        instance = this;
+
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "openservermap:channel");
 
@@ -25,6 +28,10 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         // Plugin shutdown logic
 
+    }
+
+    public static InputStream getConformals() {
+        return instance.getResource("conformal2.txt");
     }
 
 }
