@@ -28,8 +28,8 @@ public class SendPlayerMapDataTask implements Runnable {
         } catch (CoordinateValueError e) {
             return;
         }
-        out.writeChars(player.getName());
-        out.writeChars("$");
+        out.writeLong(player.getUniqueId().getMostSignificantBits());
+        out.writeLong(player.getUniqueId().getLeastSignificantBits());
         out.writeFloat((float) playerLatLon[0]);
         out.writeFloat((float) playerLatLon[1]);
         out.writeShort(encodeDiretion(player.getYaw()));
@@ -38,21 +38,23 @@ public class SendPlayerMapDataTask implements Runnable {
     SendPlayerMapDataTask(OpenServerMap plugin) {
         this.plugin = plugin;
 
-
-
     }
 
     @Override
     public void run() {
         //plugin.getServer().broadcast(Component.text("yayayaya"));
 
+        if (!Projection.initialized) {
+            Projection.initialize();
+        }
+
         out = ByteStreams.newDataOutput();
         out.writeByte(PACKET_VERSION);
 
         Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
-        System.out.println(players.size());
         for (Player player : players.toArray(new Player[0])) {
             encodePlayer(out, player);
+            System.out.println(player.getUniqueId());
         }
 
         if (plugin.getServer().getOnlinePlayers().toArray().length != 0) {

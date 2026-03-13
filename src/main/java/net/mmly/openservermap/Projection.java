@@ -6,7 +6,13 @@ import java.io.*;
 
 public class Projection {
 
-    public static Plugin plugin;
+    public static boolean initialized = false;
+
+    static void initialize() {
+        _projection = new ModifiedAirOcean();
+        _upright_proj = _orient_projection(_projection, Orientation.UPRIGHT);
+        _scale_proj = new ScaleProjection(_upright_proj, 7318261.522857145, 7318261.522857145);
+    }
 
     static void _validate_geographic_coordinates(double lat, double lon) throws CoordinateValueError {
         if(!(-90 <= lat && lat <= 90)) {
@@ -43,9 +49,9 @@ public class Projection {
         return base;
     }
 
-    static ModifiedAirOcean _projection = new ModifiedAirOcean();
-    static GeographicProjection _upright_proj = _orient_projection(_projection, Orientation.UPRIGHT);
-    static ScaleProjection _scale_proj = new ScaleProjection(_upright_proj, 7318261.522857145, 7318261.522857145);
+    static ModifiedAirOcean _projection;
+    static GeographicProjection _upright_proj;
+    static ScaleProjection _scale_proj;
 
     //returns [x, z]
     public static double[] from_geo(double lat, double lon) throws CoordinateValueError {
