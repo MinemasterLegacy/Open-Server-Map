@@ -1,0 +1,4 @@
+name: OpenServerMap
+version: '1.0-SNAPSHOT'
+main: net.mmly.openservermap.OpenServerMap
+api-version: '1.21'
