@@ -10,6 +10,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
 
     private static int interval = 0;
     private static OpenServerMap instance;
+    public static final int PACKET_INTERVAL = 5;
 
     @Override
     public void onEnable() {
@@ -20,7 +21,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
         getServer().getMessenger().registerOutgoingPluginChannel(this, "openservermap:channel");
 
         BukkitScheduler scheduler = this.getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, new SendPlayerMapDataTask(this), 20, 20);
+        scheduler.scheduleSyncRepeatingTask(this, new SendPlayerMapDataTask(this), PACKET_INTERVAL, PACKET_INTERVAL);
     }
 
     @Override

@@ -52,13 +52,14 @@ public class SendPlayerMapDataTask implements Runnable {
         out.writeByte(PACKET_VERSION);
 
         Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
+
+        if (players.isEmpty()) return;
+
         for (Player player : players.toArray(new Player[0])) {
             encodePlayer(out, player);
-            System.out.println(player.getUniqueId());
         }
 
-        if (plugin.getServer().getOnlinePlayers().toArray().length != 0) {
-            Player player = (Player) plugin.getServer().getOnlinePlayers().toArray()[0];
+        for (Player player : players) {
             player.sendPluginMessage(plugin, "openservermap:channel", out.toByteArray());
         }
 
