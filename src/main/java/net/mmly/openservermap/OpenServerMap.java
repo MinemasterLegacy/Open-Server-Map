@@ -8,9 +8,8 @@ import java.io.InputStream;
 
 public final class OpenServerMap extends JavaPlugin implements Listener {
 
-    private static int interval = 0;
     private static OpenServerMap instance;
-    public static final int PACKET_INTERVAL = 5;
+    public static final int PACKET_INTERVAL = 1;
 
     @Override
     public void onEnable() {
