@@ -1,5 +1,5 @@
 name: OpenServerMap
-version: '1.0-SNAPSHOT'
+version: '1.0'
 main: net.mmly.openservermap.OpenServerMap
 api-version: '1.21'
 description: "Server-side integration for OpenMineMap"
