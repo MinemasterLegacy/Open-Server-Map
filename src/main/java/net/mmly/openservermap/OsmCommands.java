@@ -17,10 +17,19 @@ public class OsmCommands {
 
     }
 
+    private static boolean playerCanRun(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().getSender().hasPermission("openservermap.viscommands")) {
+            return true;
+        } else {
+            context.getSource().getSender().sendMessage("You do not have permission to use this command.");
+            return false;
+        }
+    }
+
     public static int showself(CommandContext<CommandSourceStack> context) {
         CommandSourceStack stack = context.getSource();
         if (!ranByPlayer(context)) return 0;
-        //TODO check permission for running this command
+        if (!playerCanRun(context)) return 0;
 
         if (Database.setPlayerVisibility(((Player) stack.getSender()).getUniqueId(), true)) {
             context.getSource().getSender().sendMessage("You are now visible globally.");
@@ -35,10 +44,9 @@ public class OsmCommands {
     public static int hideself(CommandContext<CommandSourceStack> context) {
         CommandSourceStack stack = context.getSource();
         if (!ranByPlayer(context)) return 0;
-        //TODO check permission for running this command
-        Player player = (Player) stack.getSender();
+        if (!playerCanRun(context)) return 0;
 
-        if (Database.setPlayerVisibility((player).getUniqueId(), false)) {
+        if (Database.setPlayerVisibility(((Player) stack.getSender()).getUniqueId(), false)) {
             context.getSource().getSender().sendMessage("You are no longer visible globally.");
             return 1;
         } else {

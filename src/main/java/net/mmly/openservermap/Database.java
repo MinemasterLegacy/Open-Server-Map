@@ -9,8 +9,6 @@ public class Database {
     private static Connection connection;
     private static boolean connectionSuccessful;
 
-    //TODO add boolean field
-
     private static Connection connect() throws SQLException {
         try {
             Class.forName("org.sqlite.JDBC");
