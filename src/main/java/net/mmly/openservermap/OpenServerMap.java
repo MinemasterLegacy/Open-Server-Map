@@ -1,12 +1,11 @@
 package net.mmly.openservermap;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -18,10 +17,14 @@ import java.util.logging.Level;
 public final class OpenServerMap extends JavaPlugin implements Listener {
 
     private static OpenServerMap instance;
+    public static ArrayList<UUID> hiddenPlayers = new ArrayList<>();
+
     public static int PACKET_INTERVAL;
     public static boolean TRANSMIT_SPECTATORS;
     public static boolean VISIBILITY_OPT_IN;
-    public static ArrayList<UUID> hiddenPlayers = new ArrayList<>();
+    public static boolean PERSISTENT_VISIBILITY;
+    public static boolean DENY_PERMISSION_ENABLED;
+    public static boolean OVERRIDE_PERMISSION_ENABLED;
 
     @Override
     public void onEnable() {
@@ -46,28 +49,25 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
     }
 
     private void registerCommands() {
-        LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
-        manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
-            final Commands commands = event.registrar();
-            commands.register(Commands.literal("showself").executes(OsmCommands::showself).build());
-        });
-        /*
-        LiteralCommandNode<CommandSourceStack> pluginCommands = Commands.literal("osm")
+
+        LiteralCommandNode<CommandSourceStack> pluginCommands = Commands.literal("osm").requires(sender -> sender.getSender().hasPermission("openservermap.viscommands"))
                 .then(Commands.literal("showself").executes(OsmCommands::showself))
                 .then(Commands.literal("hideself").executes(OsmCommands::hideself))
-                .then(Commands.literal("reload").executes(OsmCommands::reload))
                 .build();
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(pluginCommands);
         });
 
-         */
+
     }
 
     private void loadConfigOptions() {
         PACKET_INTERVAL = this.getConfig().getInt("packet-interval");
         VISIBILITY_OPT_IN = this.getConfig().getBoolean("visibility-opt-in");
         TRANSMIT_SPECTATORS = this.getConfig().getBoolean("transmit-spectators");
+        PERSISTENT_VISIBILITY = this.getConfig().getBoolean("persistent-visibility");
+        DENY_PERMISSION_ENABLED = this.getConfig().getBoolean("deny-view");
+        OVERRIDE_PERMISSION_ENABLED = this.getConfig().getBoolean("override-view");
     }
 
     @Override
@@ -76,6 +76,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
         // Plugin shutdown logic
         Database.closeConnection();
         saveConfig();
+
     }
 
     public static void log(Level level, String message) {

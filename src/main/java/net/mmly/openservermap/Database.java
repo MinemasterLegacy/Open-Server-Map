@@ -18,6 +18,8 @@ public class Database {
             return null;
         }
 
+        deleteDatabaseIfNotPersistent();
+
         var sql = "CREATE TABLE IF NOT EXISTS players (" +
                 "	uuid text PRIMARY KEY," +
                 "   visible BOOL NOT NULL" +
@@ -41,8 +43,22 @@ public class Database {
         }
     }
 
+    private static boolean deleteDatabaseIfNotPersistent() {
+        if (!connectionSuccessful) return false;
+        if (OpenServerMap.PERSISTENT_VISIBILITY) return true;
+        try {
+            PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS players");
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            OpenServerMap.log(Level.WARNING, "Database failed to purge: " + e.getMessage());
+            return false;
+        }
+    }
+
     public static void closeConnection() {
         try {
+            deleteDatabaseIfNotPersistent();
             connection.close();
         } catch (SQLException e) {
             OpenServerMap.log(Level.WARNING, "Database failed to properly close: " + e.getMessage());
@@ -52,7 +68,7 @@ public class Database {
     public static boolean initializePlayerEntry(UUID uuid) {
         if (!connectionSuccessful) return false;
         try {
-            var statement = connection.prepareStatement("INSERT INTO players VALUES(?,?);");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO players VALUES(?,?);");
             statement.setString(1, uuid.toString());
             statement.setBoolean(2, getDefaultVisibilityState());
             statement.executeUpdate();
@@ -102,13 +118,14 @@ public class Database {
     /// If an error occurs, this method will revert to the default defined by the visibility-opt-in config option.
     public static boolean playerIsVisible(UUID uuid) {
         if (!connectionSuccessful) return getDefaultVisibilityState();
-        try (ResultSet resultSet = query("SELECT visible FROM players WHERE uuid = \"" + uuid.toString() + "\"")) {
+        try (ResultSet resultSet = query("SELECT uuid, visible FROM players WHERE uuid = \"" + uuid.toString() + "\"")) {
             if (resultSet == null) return getDefaultVisibilityState();
             //If true is returned from next(), a player matching the query uuid was found (first row valid), so return true (true || x) == true
             //If false, is returned from next(), a player matching the query uuid was NOT found (first row not valid), so return the default state (false || x) == x
-            return resultSet.getBoolean(1);
+            return resultSet.getBoolean(2);
         } catch (SQLException e) {
             OpenServerMap.log(Level.WARNING, "Failed to check for visibility of player \"" + uuid + "\", will revert to default state; " + e.getMessage());
+            e.printStackTrace();
             return getDefaultVisibilityState();
         }
     }

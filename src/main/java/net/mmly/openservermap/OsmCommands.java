@@ -9,10 +9,10 @@ public class OsmCommands {
 
     private static boolean ranByPlayer(CommandContext<CommandSourceStack> context) {
         if (context.getSource().getSender() instanceof Player) {
+            return true;
+        } else {
             context.getSource().getSender().sendMessage("Error: Sender is not a Player");
             return false;
-        } else {
-            return true;
         }
 
     }
@@ -36,18 +36,14 @@ public class OsmCommands {
         CommandSourceStack stack = context.getSource();
         if (!ranByPlayer(context)) return 0;
         //TODO check permission for running this command
+        Player player = (Player) stack.getSender();
 
-        if (Database.setPlayerVisibility(((Player) stack.getSender()).getUniqueId(), false)) {
+        if (Database.setPlayerVisibility((player).getUniqueId(), false)) {
             context.getSource().getSender().sendMessage("You are no longer visible globally.");
             return 1;
         } else {
             context.getSource().getSender().sendMessage("An error occurred. Check logs for more info.");
             return 0;
         }
-    }
-
-    public static int reload(CommandContext<CommandSourceStack> context) {
-        //TODO
-        return 1;
     }
 }

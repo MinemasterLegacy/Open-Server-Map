@@ -6,12 +6,12 @@ description: "Server-side integration for OpenMineMap"
 
 author: "MinemasterLegacy"
 permissions:
-  commands:
-    description: "Permissions for commands"
-    children:
-      commands.visibility:
-        description: "For showself and hideself"
-        default: not op
-      commands.managment:
-        description: "Plugin managment commands like reload"
-        default: op
+  openservermap.viscommands:
+    description: "Permissions to allow players that have it to use visibility commands"
+    default: not op
+  openservermap.denyvis:
+    description: "Permission that denies players that have it from receiving map data. Will only work with the deny-view config option set to true."
+    default: not op
+  openservermap.overridevis:
+    description: "Permission that overrides other players' visibility settings for players who have it. Will only work with the override-view config option set to true."
+    default: not op
