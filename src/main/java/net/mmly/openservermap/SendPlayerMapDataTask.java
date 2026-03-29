@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.logging.Level;
 
 public class SendPlayerMapDataTask implements Runnable {
 
@@ -56,26 +57,28 @@ public class SendPlayerMapDataTask implements Runnable {
 
     @Override
     public void run() {
-        //plugin.getServer().broadcast(Component.text("yayayaya"));
+        try {
+            if (!Projection.initialized) {
+                Projection.initialize();
+            }
 
-        if (!Projection.initialized) {
-            Projection.initialize();
-        }
+            Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
+            if (players.isEmpty()) return;
 
-        Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
-        if (players.isEmpty()) return;
+            out = encodePacket(players, false);
+            if (OpenServerMap.OVERRIDE_PERMISSION_ENABLED) overrideOut = encodePacket(players, true);
 
-        out = encodePacket(players, false);
-        if (OpenServerMap.OVERRIDE_PERMISSION_ENABLED) overrideOut = encodePacket(players, true);
-
-        for (Player player : players) {
-            if (denyViewFor(player)) continue;
-            player.sendPluginMessage(
-                    plugin,
-                    "openservermap:channel",
-                    overrideViewFor(player) ?
-                            overrideOut.toByteArray() :
-                            out.toByteArray());
+            for (Player player : players) {
+                if (denyViewFor(player)) continue;
+                player.sendPluginMessage(
+                        plugin,
+                        "openservermap:channel",
+                        overrideViewFor(player) ?
+                                overrideOut.toByteArray() :
+                                out.toByteArray());
+            }
+        } catch (Exception e) {
+            OpenServerMap.log(Level.WARNING, "Failed to send plaayer data packet: " + e.getMessage());
         }
 
     }
