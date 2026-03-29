@@ -1,15 +1,16 @@
 package net.mmly.openservermap;
 
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.InputStream;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -29,10 +30,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
 
         saveDefaultConfig();
         loadConfigOptions();
-
-        //System.out.println(Database.writeUUID(UUID.fromString("6772ffa7-3606-3001-96a1-ec7bc4fa58f6")));
-        System.out.println(Database.writeUUID(UUID.fromString("6772ffa7-3606-3001-96a1-ec7bc4fa58f6")));
-        System.out.println(Database.checkForUUID(UUID.fromString("6772ffa7-3606-3001-96a1-ec7bc4fa58f6")));
+        Database.establishConnection();
 
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getMessenger().registerOutgoingPluginChannel(this, "openservermap:channel");
@@ -41,15 +39,29 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
         if (PACKET_INTERVAL > 0) scheduler.scheduleSyncRepeatingTask(this, new SendPlayerMapDataTask(this), PACKET_INTERVAL, PACKET_INTERVAL);
         else this.getLogger().log(Level.WARNING, "Invalid Configuration value \"" + PACKET_INTERVAL + "\" for packet-interval. Packets will not be sent.");
 
+        registerCommands();
+
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+
+    }
+
+    private void registerCommands() {
+        LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
+        manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            final Commands commands = event.registrar();
+            commands.register(Commands.literal("showself").executes(OsmCommands::showself).build());
+        });
+        /*
         LiteralCommandNode<CommandSourceStack> pluginCommands = Commands.literal("osm")
-            .then(Commands.literal("showself").executes(OsmCommands::showself))
-            .then(Commands.literal("hideself").executes(OsmCommands::hideself))
-            .then(Commands.literal("reload").executes(OsmCommands::reload))
-        .build();
+                .then(Commands.literal("showself").executes(OsmCommands::showself))
+                .then(Commands.literal("hideself").executes(OsmCommands::hideself))
+                .then(Commands.literal("reload").executes(OsmCommands::reload))
+                .build();
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(pluginCommands);
         });
 
+         */
     }
 
     private void loadConfigOptions() {
@@ -62,6 +74,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
     public void onDisable() {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
         // Plugin shutdown logic
+        Database.closeConnection();
         saveConfig();
     }
 

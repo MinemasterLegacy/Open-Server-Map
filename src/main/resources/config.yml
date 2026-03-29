@@ -2,7 +2,7 @@
 # How long to wait in between sending each packet.
 packet-interval: 5
 
-# Whether players should be shown by default. Set to true in order to require opt-in via the command.
+# Whether players should (false) or shouldn't (true) be shown by default. Set to true in order to require opt-in via the command.
 visibility-opt-in: false
 
 # Whether to toggle visibility for a player when they use EssentialsX vanish.

@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import java.nio.ByteBuffer;
 import java.util.Collection;
 
 public class SendPlayerMapDataTask implements Runnable {
@@ -22,7 +21,8 @@ public class SendPlayerMapDataTask implements Runnable {
     }
 
     private void encodePlayer(ByteArrayDataOutput out, Player player) {
-        if (player.getGameMode() == GameMode.SPECTATOR) return;
+        if (player.getGameMode() == GameMode.SPECTATOR && !OpenServerMap.TRANSMIT_SPECTATORS) return;
+        if (Database.playerIsVisible(player.getUniqueId())) return;
         double[] playerLatLon;
         try {
             playerLatLon = Projection.to_geo(player.getX(), player.getZ());
