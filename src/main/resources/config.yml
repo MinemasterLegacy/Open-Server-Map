@@ -1,0 +1,25 @@
+
+# How long to wait in between sending each packet.
+packet-interval: 5
+
+# Whether players should be shown by default. Set to true in order to require opt-in via the command.
+visibility-opt-in: false
+
+# Whether to toggle visibility for a player when they use EssentialsX vanish.
+vanish-sync: true
+
+# Whether player visibility changes should be saved.
+persistent-visibility: false
+
+# Allow players with the "" permission to see all players, regardless of any visibility status.
+override-view: true
+
+# Deny players with the "" permission from seeing any players, regardless of any visibility status.
+deny-view: true
+
+# Only send data about players connected to the listed proxies. Leave commented to allow all.
+# allowed-proxies: []
+
+# Whether to send data on players that are in spectator mode
+transmit-spectators: true
+

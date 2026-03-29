@@ -2,3 +2,16 @@ name: OpenServerMap
 version: '1.0-SNAPSHOT'
 main: net.mmly.openservermap.OpenServerMap
 api-version: '1.21'
+description: "Server-side integration for OpenMineMap"
+
+author: "MinemasterLegacy"
+permissions:
+  commands:
+    description: "Permissions for commands"
+    children:
+      commands.visibility:
+        description: "For showself and hideself"
+        default: not op
+      commands.managment:
+        description: "Plugin managment commands like reload"
+        default: op

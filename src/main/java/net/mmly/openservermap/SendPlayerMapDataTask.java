@@ -2,6 +2,7 @@ package net.mmly.openservermap;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.nio.ByteBuffer;
@@ -21,6 +22,7 @@ public class SendPlayerMapDataTask implements Runnable {
     }
 
     private void encodePlayer(ByteArrayDataOutput out, Player player) {
+        if (player.getGameMode() == GameMode.SPECTATOR) return;
         double[] playerLatLon;
         try {
             playerLatLon = Projection.to_geo(player.getX(), player.getZ());
