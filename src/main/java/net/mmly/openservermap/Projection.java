@@ -12,6 +12,7 @@ public class Projection {
         _projection = new ModifiedAirOcean();
         _upright_proj = _orient_projection(_projection, Orientation.UPRIGHT);
         _scale_proj = new ScaleProjection(_upright_proj, 7318261.522857145, 7318261.522857145);
+        initialized = true;
     }
 
     static void _validate_geographic_coordinates(double lat, double lon) throws CoordinateValueError {
