@@ -1,6 +1,5 @@
 package net.mmly.openservermap;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.entity.Player;
@@ -52,6 +51,20 @@ public class OsmCommands {
         } else {
             context.getSource().getSender().sendMessage("An error occurred. Check logs for more info.");
             return 0;
+        }
+    }
+
+    public static int amivisible(CommandContext<CommandSourceStack> context) {
+        CommandSourceStack stack = context.getSource();
+        if (!ranByPlayer(context)) return 0;
+        if (!playerCanRun(context)) return 0;
+
+        if (Database.playerIsVisible(((Player) stack.getSender()).getUniqueId())) {
+            context.getSource().getSender().sendMessage("You are currently visible globally.");
+            return 1;
+        } else {
+            context.getSource().getSender().sendMessage("You are not currently visible globally.");
+            return 1;
         }
     }
 }

@@ -53,6 +53,7 @@ public final class OpenServerMap extends JavaPlugin implements Listener {
         LiteralCommandNode<CommandSourceStack> pluginCommands = Commands.literal("osm").requires(sender -> sender.getSender().hasPermission("openservermap.viscommands"))
                 .then(Commands.literal("showself").executes(OsmCommands::showself))
                 .then(Commands.literal("hideself").executes(OsmCommands::hideself))
+                .then(Commands.literal("amivisible").executes(OsmCommands::amivisible))
                 .build();
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(pluginCommands);
