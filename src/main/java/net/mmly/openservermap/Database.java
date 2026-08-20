@@ -63,7 +63,7 @@ public class Database {
         }
     }
 
-    public static boolean initializePlayerEntry(UUID uuid) {
+    public static boolean initializePlayerEntryIfAbsent(UUID uuid) {
         if (!connectionSuccessful) return false;
         try {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO players VALUES(?,?);");
@@ -72,7 +72,7 @@ public class Database {
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
-            if (e.getErrorCode() == 2067) return true; //2067 is thrown when the value already exists; it can be ignored
+            if (e.getErrorCode() == 19) return true; //19 is (ususally) thrown when the value already exists; it can be ignored
             OpenServerMap.log(Level.WARNING, "Failed to initialize player entry: " + e.getMessage());
             return false;
         }

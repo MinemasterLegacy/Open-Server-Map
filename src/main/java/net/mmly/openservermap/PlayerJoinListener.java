@@ -9,7 +9,7 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         //System.out.println("entry init");
-        Database.initializePlayerEntry(event.getPlayer().getUniqueId());
+        Database.initializePlayerEntryIfAbsent(event.getPlayer().getUniqueId());
         //Database.printTable();
     }
 
